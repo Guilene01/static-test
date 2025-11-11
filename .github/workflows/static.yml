@@ -10,7 +10,7 @@ on:
 env:
     OIDC_ROLE_ARN: ${{ vars.OIDC_ROLE_ARN }}
     AWS_REGION: us-east-1
-      
+    
 permissions:
   id-token: write
   contents: read
@@ -37,6 +37,11 @@ jobs:
        - name: Upload files to S3
          run: |
           aws s3 cp . s3://s36tutorial-1995/ --recursive
+       - name: Invalidate CloudFront cache
+         uses: chetan/invalidate-cloudfront-action@v2
+         env:
+          DISTRIBUTION: E1MMYKOE2HESP9
+          PATHS: "/*"
           
     
  
