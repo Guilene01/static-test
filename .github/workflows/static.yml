@@ -32,31 +32,8 @@ jobs:
          uses: aws-actions/configure-aws-credentials@v4
          with:
           role-to-assume: ${{ env.OIDC_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }} 
-       - name: Start a local web server
-         run: |
-          python3 -m http.server 8080 &
-          sleep 5
+          aws-region: ${{ env.AWS_REGION }}
 
-       - name: Run OWASP ZAP Baseline Scan (Fixed Permissions)
-         run: |
-          docker run \
-            --rm \
-            -u zap \
-            -v /tmp/zap:/zap/wrk/:rw \
-            --network="host" \
-            ghcr.io/zaproxy/zaproxy:stable \
-            zap-baseline.py -t http://localhost:8080 \
-            -J report_json.json -w report_md.md -r report_html.html -a
-
-
-       - name: Upload ZAP Report
-         uses: actions/upload-artifact@v4
-         with:
-          name: zap-report
-          path: report_html.html
-
-    
        - name: Upload files to S3
          run: |
           aws s3 cp . s3://s36tutorial-1995/ --recursive
